@@ -9,9 +9,46 @@
         </p>
         <p>
             <a href="{% url "core:post_share" post.id %}">
-            Share this post
+            Compartilhe esta Postagem
             </a>
         </p>
     {{ post.body|linebreaks }}
+
+    {% for field in form %}
+        <div>
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+        </div>
+    {% endfor %}
+
+    {% with comments.count as total_comments %}
+        <h2>{{ total_comments }} comentário{{ total_comments | pluralize }}</h2>
+    {% endwith %}        
     
+    {% for comment in comments %}
+        <div class="comment">
+            <p class="info">
+                Comentário {{ forloop.counter }} by {{ comment.name }}
+                {{ comment.created }}
+            </p>
+                {{ comment.body|linebreaks }}
+        </div>
+    {% empty %}        
+        <p>Não possui comentários</p>
+    {% endfor %}            
+    
+    {% if new_comment %}
+        <h2> Seu Comentário foi adicionado.</h2>
+    {% else %}
+        <h2>
+            <form action="" method="POST">
+                {% csrf_token %}
+                {{ comment_form.as_p}}
+                <p>
+                    <input type="submit" value="Adicone um Comentário">
+                </p>
+            </form>
+        </h2>
+    {% endif %}
+
 {% endblock %}

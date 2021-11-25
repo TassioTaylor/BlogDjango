@@ -4,9 +4,11 @@ from django.http import request
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404, render, resolve_url
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.utils.translation import activate
 from django.views.generic import ListView
-from core.forms import EmailPostForm
+from core.forms import EmailPostForm, CommentForm
 from django.core.mail import send_mail
+from .models import Post, Comment
 
 from core.models import Post
 
@@ -61,4 +63,20 @@ def post_detail(request, year, month, day, post):
                                     publish__year=year,
                                     publish__month=month,
                                     publish__day=day)
-    return render(request,'blog/post/detail.html',{'post': post})                                 
+
+    comments = post.comments.filter(activate = True)
+    new_comment = None
+
+    if request.POST:
+        comment_form = CommentForm(data = request.POST)
+        if comment_form.is_valid():
+            new_comment = comment_form.save(commit = False)
+            new_comment.post = post
+            new_comment.save()
+    else:
+        comment_form = CommentForm()
+
+    return render(request,'blog/post/detail.html',{'post': post,
+                                                    'comments': comments,
+                                                    'new_comment': new_comment,
+                                                    'comment_form': comment_form})
