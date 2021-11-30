@@ -1,3 +1,4 @@
+{% load blog_tags %}
 {% load static %}
 <!DOCTYPE html>
 <html>
@@ -12,8 +13,10 @@
         {% endblock %}
     </div>
     <div id="sidebar">
-        <h2>My blog</h2>
-        <p>This is my blog.</p>
+        <h2>Meu blog</h2>
+        <p>Total de {% total_posts %} postagens até agora.</p>
+        <h3>Ultimas Postagens</h3>
+        {% show_latest_posts 2 %}
     </div>
 </body>
 
